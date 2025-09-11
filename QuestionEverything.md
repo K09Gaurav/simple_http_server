@@ -24,3 +24,16 @@ why? becuase
 2. The client decides which protocol to use:
  - Browser → IPv4
  - curl → IPv6
+
+# 2nd Iteration
+
+Connecting client Manually
+
+```java
+// Create Socket object with IP Adress of sserver and port number
+Socket socket = new Socket("localhost", 8787);
+System.out.println("Connected to Server on : "+ socket.getInetAddress());
+```
+- Client connects to this socket in perticular
+- address of server is -> IP adresss (local host) and port number (8787)
+- `socket.getInetAddress()` -> Returns the IP address of the server the client is connected to.
