@@ -29,7 +29,7 @@ public class server_for_multiple_Clients {
 
         } catch (Exception e) {
             // TODO: handle exception
-            System.out.println(e.getStackTrace());
+            System.out.println(e.printStackTrace(););
         }
 
 
