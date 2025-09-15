@@ -1,6 +1,8 @@
 package src;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.*;
 
@@ -45,7 +47,57 @@ public class connection implements Runnable{
      */
     private void parseRequest() throws IOException{
 
+        // connct buffered reader to clients socket input stream
+        // using buffered reader because http is line bassed protocol and we have to use readline for the ease of use
+        BufferedReader connectionReader = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
+
+        //Read top request line from client
+        //ex: GET /index.html HTTP/1.1
+        String  requestLine = connectionReader.readLine();
+
+        // If request line is not null
+        if (requestLine != null){
+            // since top line is formatted different we extract it first
+            // First line = request line → special 3-part format.
+            // rest have same format They are always Key: Value
+            String[] requestLineParams = requestLine.split(" ");
+
+            request.put("Method", requestLineParams[0]);
+            request.put("Resource", requestLineParams[1]);
+            request.put("Protocol", requestLineParams[2]);
+
+            // read next line
+            String headerLine = connectionReader.readLine();
+
+            /*
+            * as a header has many key value pairs storred inside
+            * till now we have only extracted 1 pair
+            * we store the lines/parameters in the map
+            * and continue with next parameter
+            */
+            while (!headerLine.isEmpty()) {
+                // Split the requsets filed into key value pair
+                String[] requestParams = headerLine.split(":", 2);
+
+                //store it in map
+                //the second text will have a leading space bar
+                request.put(requestParams[0], requestParams[1].replaceFirst(" ", ""));
+
+
+                /*
+                * In HTTP, headers are terminated by a blank line (\r\n).
+                * every header line ends with \r\n.
+                * But there’s a special extra \r\n after the last header.
+                * Now it sees the empty line (\r\n with no characters in it) → readLine() returns ""
+                */
+                headerLine = connectionReader.readLine();
+
+            }
+
+        }
+
     }
+
 
     /*
      * Send Appropriate Response based on client Request
