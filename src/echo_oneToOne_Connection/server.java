@@ -10,27 +10,28 @@ public class server {
         try {
             System.out.println("Waiting for Clients");
 
-            ServerSocket serverSocket = new ServerSocket(8787);
-            System.out.println("Server started at port: " + serverSocket.getLocalPort());
+            try (ServerSocket serverSocket = new ServerSocket(8787)) {
+                System.out.println("Server started at port: " + serverSocket.getLocalPort());
 
-            Socket socket = serverSocket.accept();
-            System.out.println("Client Accepted on socket: " + socket.getInetAddress());
+                Socket socket = serverSocket.accept();
+                System.out.println("Client Accepted on socket: " + socket.getInetAddress());
 
-            while (true) {
-                BufferedReader clientData = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                while (true) {
+                    BufferedReader clientData = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-                String inputString = clientData.readLine();
-                System.out.println("Input Stream from Buffered reader: " + inputString);
+                    String inputString = clientData.readLine();
+                    System.out.println("Input Stream from Buffered reader: " + inputString);
 
-                PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-                out.println("Server says "+ inputString);
+                    PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+                    out.println("Server says "+ inputString);
 
-                BufferedReader UserInput = new BufferedReader(new InputStreamReader(System.in));
+                    BufferedReader UserInput = new BufferedReader(new InputStreamReader(System.in));
 
-                System.out.println("Reply to Client: ");
-                String str = UserInput.readLine();
-                out.println(str);
+                    System.out.println("Reply to Client: ");
+                    String str = UserInput.readLine();
+                    out.println(str);
 
+                }
             }
 
 
