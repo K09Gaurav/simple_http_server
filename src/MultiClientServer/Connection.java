@@ -1,4 +1,5 @@
-package src;
+package MultiClientServer;
+
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -7,14 +8,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.file.Files;
-import java.sql.Connection;
 import java.util.*;
 
 
-public class connection implements Runnable{
+public class Connection implements Runnable{
     
     // socket used to connect to client
     private Socket connectionSocket;
@@ -31,7 +30,7 @@ public class connection implements Runnable{
      *
      * @param connectionSocket -> Socket recieved from server that has accepted the client.
      */
-    public connection(connectionSocket){
+    public Connection(Socket connectionSocket){
         this.connectionSocket = connectionSocket;
         this.request = new HashMap<>();
         this.redirect = new HashMap<>();
@@ -39,9 +38,10 @@ public class connection implements Runnable{
         redirect.put("/", "/index.html");
         // redirect.put("", "/index.html"); -> redundant because http by default never send "" always / is default
         redirect.put("index.html", "/index.html");
-        redirect.put("index", "/index.html");
-        redirect.put("home.html", "/index.html");
-        redirect.put("homepage.html", "/index.html");
+        redirect.put("/index", "/index.html");
+        redirect.put("/home.html", "/index.html");
+        redirect.put("/homepage.html", "/index.html");
+        redirect.put("/index.htm", "/index.html");
     }
 
     /*
@@ -161,23 +161,39 @@ public class connection implements Runnable{
         //if file requested does not exists in sysstem
         // resspond 404 with a webpage
         else if (!file.exists()) {
+            // String httpResponse = """
+            //         HTTP/1.1 404 Not Found\r\n
+            //         Content-Type: text/html; charset=UTF-8\r\n
+            //         \r\n
+            //         <!DOCTYPE html>\n
+            //         <html>\n
+            //         \n
+            //         <head>\n
+            //         <title> Unknown File Requessted from server </title>\n
+            //         </head>\n
+            //         \n
+            //         <body>\n
+            //         <h1> WEB PAGE NOT FOUND </h1>\n
+            //         </body>\n
+            //         \n
+            //         </html>
+            //         """;
             String httpResponse = """
-                    HTTP/1.1 404 Not Found\r\n
+                    HTTP/1.1 404 Not Found
                     Content-Type: text/html; charset=UTF-8\r\n
-                    \r\n
-                    <!DOCTYPE html>\n
-                    <html>\n
-                    \n
-                    <head>\n
-                    <title> Unknown File Requessted from server </title>\n
-                    </head>\n
-                    \n
-                    <body>\n
-                    <h1> WEB PAGE NOT FOUND </h1>\n
-                    </body>\n
-                    \n
+                    <!DOCTYPE html>
+                    <html lang="en">
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <title>Home</title>
+                    </head>
+                    <body>
+                        <h1>Error 404 : File you are requesting iss not availaible</h1>
+                    </body>
                     </html>
                     """;
+            // String httpResponse = "HTTP/1.1 404 Not Found\r\n\r\n <h1> WEB PAGE NOT FOUND </h1>\n";
             // Cant ussse writeBytes like previouse one
             // writeBytes(String) expects a String. we are passing a byte[].
             outputStream.write(httpResponse.getBytes("UTF-8"));
@@ -257,7 +273,7 @@ public class connection implements Runnable{
     }
 
     @Override
-    public void Run(){
+    public void run(){
         try {
             //Parse the client Request and store the request in request hashmap
             parseRequest();
@@ -270,7 +286,7 @@ public class connection implements Runnable{
 
         } catch (Exception e) {
             // TODO: handle exception
-            System.out.println(e.printStackTrace());
+           e.printStackTrace();
         }
 
     }

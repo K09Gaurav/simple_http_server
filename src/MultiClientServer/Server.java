@@ -1,9 +1,9 @@
-package src;
+package MultiClientServer;
 
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class server_for_multiple_Clients {
+public class Server {
     public static void main(String[] args) {
         try {
             ServerSocket serverSocket = new ServerSocket(8787);
@@ -18,7 +18,7 @@ public class server_for_multiple_Clients {
                 Socket connectionSocket = serverSocket.accept();
 
                 //create new thread to accept client request
-                Thread connectionThread = new Thread(new connection(connectionSocket));
+                Thread connectionThread = new Thread(new Connection(connectionSocket));
 
                 //start connection Thread
                 connectionThread.start();
@@ -26,10 +26,13 @@ public class server_for_multiple_Clients {
 
             }
 
+            //unreachable
+            // serverSocket.close();
+
 
         } catch (Exception e) {
             // TODO: handle exception
-            System.out.println(e.printStackTrace(););
+            e.printStackTrace();
         }
 
 
