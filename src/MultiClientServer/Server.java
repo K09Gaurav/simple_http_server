@@ -6,24 +6,25 @@ import java.net.Socket;
 public class Server {
     public static void main(String[] args) {
         try {
-            ServerSocket serverSocket = new ServerSocket(8787);
-            System.out.println("Started Server on port : "+ serverSocket.getLocalPort() + "\r\n");
-            
-            /*
-             * Listening for new Clients
-             */
-            while (true) {
+            try (ServerSocket serverSocket = new ServerSocket(8787)) {
+                System.out.println("Started Server on port : "+ serverSocket.getLocalPort() + "\r\n");
 
-                //Accepting new Client connection
-                Socket connectionSocket = serverSocket.accept();
+                /*
+                 * Listening for new Clients
+                 */
+                while (true) {
 
-                //create new thread to accept client request
-                Thread connectionThread = new Thread(new Connection(connectionSocket));
+                    //Accepting new Client connection
+                    Socket connectionSocket = serverSocket.accept();
 
-                //start connection Thread
-                connectionThread.start();
-                System.out.println("New Client connected on port : " + connectionSocket.getInetAddress() + "\r\n");
+                    //create new thread to accept client request
+                    Thread connectionThread = new Thread(new Connection(connectionSocket));
 
+                    //start connection Thread
+                    connectionThread.start();
+                    System.out.println("New Client connected on port : " + connectionSocket.getInetAddress() + "\r\n");
+
+                }
             }
 
             //unreachable
